@@ -1,0 +1,7 @@
+streamlit==1.32.0
+google-generativeai==0.3.2
+python-dotenv==1.0.0
+streamlit-chat==0.1.0
+pymongo
+
+i6NUuQeNBhVs7Kqe
