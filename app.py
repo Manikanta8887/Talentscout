@@ -21,16 +21,9 @@ st.set_page_config(
 load_dotenv()
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 model = genai.GenerativeModel('gemini-1.5-flash')
-# Confirm environment variables are loaded
 mongo_uri = os.getenv("MONGODB_URI")
 google_key = os.getenv("GOOGLE_API_KEY")
 
-if not mongo_uri:
-    st.sidebar.error("❌ MONGODB_URI is not loaded from .env")
-else:
-    st.sidebar.success("✅ .env loaded correctly")
-
-# Optional: console debug for dev
 print("🔑 MONGODB_URI =", mongo_uri)
 print("🔑 GOOGLE_API_KEY present?", bool(google_key))
 
@@ -138,15 +131,14 @@ def chat_interface():
 
 
 def handle_user_input(text):
-    st.session_state.chat_history.append((text, True))  # Add user message to chat history
+    st.session_state.chat_history.append((text, True))  
 
-    # Extract candidate information from the user's input
     extracted = extract_info(text)
     info = st.session_state.candidate_info
     
-    # Update candidate info based on extracted user input
+
     for key, value in extracted.items():
-        # Only save data if it's not empty or invalid
+    
         if key == "email" and not validate_email(value):
             print("❌ Invalid email:", value)
             continue
@@ -160,36 +152,30 @@ def handle_user_input(text):
             print(f"❌ Empty value for key: {key}")
             continue
 
-        # ✅ Update candidate info with valid data
         info[key] = value
 
-    st.session_state.chat_history.append(("Processing user data...", False))  # Optional response indicating data handling
-
-    # Save candidate data only if all required fields are valid
+    st.session_state.chat_history.append(("Processing user data...", False))  
     required_fields = ['name', 'email', 'phone', 'experience', 'position', 'location', 'tech_stack']
     print(info,"info")
     if all(info.get(field) for field in required_fields):
         print(info,"save candiadte triggered")
-        save_candidate(info)  # Only save if all fields are filled
+        save_candidate(info) 
         print("✅ Candidate data saved:", info)
     else:
         print("❗Not all required fields are valid. Not saving.")
 
-    # Generate the AI response based on the conversation
     generate_ai_response()
 
-    # After the AI response, check for tech stack questions
     if st.session_state.convo_stage == 'tech_stack':
         generate_technical_questions()
         st.session_state.convo_stage = 'assessment'
 
-    st.rerun()  # Re-run to update the UI and session state
+    st.rerun() 
 
 
 def generate_ai_response():
     with st.spinner("Analyzing..."):
         try:
-            # AI generates a response based on the conversation so far
             response = model.generate_content(
                 f"{SYSTEM_PROMPT}\n\nCurrent Conversation:\n{format_conversation()}"
             )
@@ -197,7 +183,6 @@ def generate_ai_response():
         except Exception as e:
             ai_response = f"Error: {str(e)}"
 
-        # Add the AI response to the chat history, but do not update candidate_info
         st.session_state.chat_history.append((ai_response, False))  
 
 
