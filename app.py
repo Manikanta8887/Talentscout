@@ -62,15 +62,6 @@ init_session()
 def show_sidebar():
     with st.sidebar:
         st.markdown("""...""", unsafe_allow_html=True)
-        
-        email_to_search = st.text_input("🔍 Load Candidate by Email", key="search_email")
-        if email_to_search and st.button("Load Candidate"):
-            candidate_data = get_candidate_by_email(email_to_search)
-            if candidate_data:
-               st.session_state.candidate_info.update(candidate_data)
-               st.success("Candidate data loaded.")
-            else:
-               st.warning("Candidate not found. They will be saved after the first message.")
 
         with st.expander("👤 Personal Details", expanded=True):
             st.markdown(f"""
